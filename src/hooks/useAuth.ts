@@ -1,7 +1,7 @@
 import { InjectedConnector } from '@web3-react/injected-connector'
 import { useWeb3React } from "@web3-react/core";
 import { Web3Provider } from "@ethersproject/providers";
-import { CHAIN_ID } from "../config/constants";
+import { CHAIN_ID } from "../configs/constants";
 import { useCallback } from "react";
 
 const injectedConnector = new InjectedConnector({

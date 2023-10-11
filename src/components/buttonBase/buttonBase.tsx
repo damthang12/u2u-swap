@@ -1,18 +1,17 @@
-import React from "react";
-import {useWeb3React} from "@web3-react/core";
 import WalletIcon from "../../asset/logo/wallet";
 import {useAuth} from "../../hooks/useAuth";
+import {useWeb3React} from "@web3-react/core";
+import React from "react";
 
 interface Props {
-    title1 : string,
-    title2 :string,
-
+    title: string | React.ReactNode;
+    title2: string
 }
 
 export default function ButtonBase(props: Props) {
-    const {tile,_tile} = props;
-    const { login } = useAuth();
-    const { account } = useWeb3React();
+    const {title,} = props;
+    const {login} = useAuth();
+    const {account} = useWeb3React();
 
     return (
         <div
@@ -20,14 +19,15 @@ export default function ButtonBase(props: Props) {
             <div className="flex justify-center">
                 <div>
                     <WalletIcon width={24} height={24}/>
+
                 </div>
                 <div>
-                                <span className=" pl-2 font-bold" onClick={login}>
-                               {account ? {title} : "Connect Wallet"}
-                            </span>
+                    <button className=" pl-2 font-bold" onClick={login}>
+                        {account ? <span>{title}</span> : <span>title2</span>}
+                    </button>
                 </div>
 
             </div>
         </div>
     );
-};
+}

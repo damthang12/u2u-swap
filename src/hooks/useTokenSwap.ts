@@ -3,27 +3,21 @@ import {useCallback, useState} from "react";
 
 export const useToken = () => {
     const tokenSwapContract = useTokenSwapContract();
-    const [tokenAddressABC, setTokenAddressABC] = useState("");
+    const [tokenAddressABC] = useState("");
 
     const onToken = useCallback(
-        async () => {
+        async (address: string, amount: string | number) => {
             if (!tokenSwapContract) return;
-            const tx = await tokenSwapContract.tokenABC();
-            return setTokenAddressABC(tx);
+            const buyTokensABC = await tokenSwapContract.buyTokensABC(amount, {
+                from: address,
+                value: amount,
+            });
+
+            return buyTokensABC.wait();
         },
         [tokenSwapContract]
     );
     return {onToken, tokenAddressABC};
 
-
-    // useEffect( () => {
-    //     if (!account) return;
-    //     window.ethereum
-    //         .request({ method: "eth_getBalance", params: [account, "latest"] })
-    //         .then((_rawBalance: any) => {
-    //             setRawBalance(_rawBalance);
-    //         });
-    // }, [account]);
-    // return { balance, rawBalance };
 };
 

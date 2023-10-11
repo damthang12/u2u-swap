@@ -1,27 +1,57 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Refresh from "../../asset/logo/icon-refresh";
 import Plus from "../../asset/logo/icon-plus";
 import ArrowIcon from "../../asset/logo/arrow-icon";
 import WalletIcon from "../../asset/logo/wallet";
 import {useAuth} from "../../hooks/useAuth";
 import {useWeb3React} from "@web3-react/core";
-import ByTokens from "../byToken/byTokens";
-import {useBalanceOf} from "../../hooks/useBlanceOf";
+import {useTokenABC} from "../../hooks/useTokenABC";
+import ByTokens from "../../components/byToken/byTokens";
+import web3 from "web3";
+import {useTokenXYZ} from "../../hooks/useTokenXYZ";
 
-const HomePage = () => {
+
+const TokenSwap = () => {
     const {login} = useAuth();
+    const {onByTokenA, tokenSoldA, tokenPriceA} = useTokenABC();
+    const {onByTokenX, tokenSoldX, tokenPriceX} = useTokenXYZ();
+    const [tokenNumberA, setTokenNumberA] = useState<number | undefined>();
+    const [tokenNumberB, setTokenNumberB] = useState<number | undefined>();
     const {account} = useWeb3React();
-    const {onBalanceOf,balanceOf} = useBalanceOf();
+
+    const handleBuyTokenA = () => {
+        if (!account || !tokenNumberA) return;
+        const convertAmount = web3.utils.toWei(tokenNumberA, "ether");
+        onByTokenA(account, convertAmount).then(r => console.log(r));
+    };
+
+    const handleBuyTokenX = () => {
+     return console.log("2222222")
+    };
+
 
     return (
-        <div className="flex pt-[200px] pb-[200px] w-full justify-around bg-[#eeeaf4]">
+        <div className="flex pt-[120px] pb-[200px] w-full justify-around bg-[#eeeaf4]">
             <div>
-                <div>
-                    <ByTokens onBalanceOf={onBalanceOf} balanceOf={balanceOf} tokenName="TokenABC"/>
+                <div className="pt-5">
+                    <ByTokens
+                        onClick={handleBuyTokenX}
+                        tokenSold={tokenSoldA}
+                        tokenPrice={tokenPriceA.toString()}
+                        onChange={(e) => setTokenNumberA(e.target?.value)}
+                        value={tokenNumberA}
+                        tokenName="TokenABC"/>
                 </div>
-                {/*<div className="pt-5">*/}
-                {/*    <ByTokens tokenName="TokenXYZ"/>*/}
-                {/*</div>*/}
+
+                <div className="pt-5">
+                    <ByTokens
+                        onClick={handleBuyTokenX}
+                        tokenSold={tokenSoldX}
+                        tokenPrice={tokenPriceX.toString()}
+                        onChange={(e) => setTokenNumberB(e.target?.value)}
+                        value={tokenNumberB}
+                        tokenName="TokenXYZ"/>
+                </div>
 
             </div>
 
@@ -164,4 +194,4 @@ const HomePage = () => {
     );
 };
 
-export default HomePage;
+export default TokenSwap;

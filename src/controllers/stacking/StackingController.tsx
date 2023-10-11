@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "../../hooks/useAuth";
 import { useWeb3React } from "@web3-react/core";
-import { useStaking } from "../hooks/useStaking";
+import { useStaking } from "../../hooks/useStaking";
 import web3 from "web3";
-import { useBalance } from "../hooks/userBalance";
-import Button from "../components/button/button";
+import { useBalance } from "../../hooks/userBalance";
+import Button from "../../components/button/button";
 
 
 function StakingController() {
@@ -18,7 +18,7 @@ function StakingController() {
     const handleStaking = () => {
         if (!account || !number) return;
         const convertAmount = web3.utils.toWei(number, "ether");
-        onStake(account, convertAmount);
+        onStake(account, convertAmount).then(r => console.log(r));
     };
 
     return (

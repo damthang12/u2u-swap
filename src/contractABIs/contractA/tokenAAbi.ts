@@ -1,4 +1,4 @@
-const tokenABCAbi = [
+const tokenAAbi = [
     {
         "inputs": [
             {
@@ -326,4 +326,4 @@ const tokenABCAbi = [
     }
 ] as const
 
-export default tokenABCAbi
+export default tokenAAbi
