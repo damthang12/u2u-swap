@@ -5,7 +5,7 @@ import { useStaking } from "../hooks/useStaking";
 import web3 from "web3";
 import { useBalance } from "../hooks/userBalance";
 import Button from "../components/button/button";
-import ButtonCover from "../components/button/buttonCover";
+
 
 function StakingController() {
     const { account } = useWeb3React();
@@ -79,7 +79,6 @@ function StakingController() {
                                     onClick={login}
                                     onStake={handleStaking}
                                 />
-                                <ButtonCover onClick={login} />
                             </div>
                         </div>
                     </div>
