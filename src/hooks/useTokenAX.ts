@@ -1,16 +1,23 @@
-import {useTokenAContract} from "./useContract";
+import {useTokenAContract, useTokenXContract} from "./useContract";
 import {useCallback, useEffect, useMemo, useState} from "react";
 import web3 from "web3";
 
-export const useTokenABC = () => {
+export const useTokenAX = () => {
     const tokenAContract = useTokenAContract();
     const [rawTokenSoldA, setRawTokenSoldA] = useState("");
     const [tokenPriceA, setTokenPriceA] = useState("");
+    const tokenXContract = useTokenXContract();
+    const [rawTokenSoldX, setRawTokenSoldX] = useState("");
+    const [tokenPriceX, setTokenPriceX] = useState("");
 
 
     const tokenSoldA = useMemo(() => {
         return web3.utils.fromWei(rawTokenSoldA, "ether");
     }, [rawTokenSoldA]);
+
+    const tokenSoldX = useMemo(() => {
+        return web3.utils.fromWei(rawTokenSoldX, "ether");
+    }, [rawTokenSoldX]);
 
 
     const onByTokenA = useCallback(
@@ -41,10 +48,22 @@ export const useTokenABC = () => {
                 setTokenPriceA(_rawPrice);
             });
 
-    }, [tokenAContract, tokenAContract?.address]);
+
+        if (!tokenXContract?.address) return;
+        tokenXContract.tokensSold({from: tokenXContract?.address})
+            .then((_rawBalance: any) => {
+                setRawTokenSoldX(_rawBalance);
+            });
+
+        tokenXContract.tokenPrice({from: tokenXContract?.address})
+            .then((_rawPrice: any) => {
+                setTokenPriceX(_rawPrice);
+            });
+
+    }, [tokenAContract, tokenAContract?.address, tokenXContract, tokenXContract?.address]);
 
 
-    return {onByTokenA, tokenSoldA, tokenPriceA};
+    return {onByTokenA, tokenSoldA, tokenPriceA, tokenSoldX, tokenPriceX};
 
 
 };

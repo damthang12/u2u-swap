@@ -15,11 +15,11 @@ export const useTokenXYZ = () => {
 
 
     const onByTokenX = useCallback(
-        async (address: string, amount: string | number) => {
+        async (address: number, amount: number, tokenPriceX: number) => {
             if (!tokenXContract) return;
             const tx = await tokenXContract.buyTokens(amount, {
                 from: address,
-                value: amount,
+                value: amount * tokenPriceX,
             });
             return tx.wait();
         },
