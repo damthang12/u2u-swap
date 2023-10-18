@@ -1,17 +1,11 @@
 import WalletIcon from "../../asset/logo/wallet";
 import {useAuth} from "../../hooks/useAuth";
-import {useWeb3React} from "@web3-react/core";
+
 import React from "react";
 
-interface Props {
-    title: string | React.ReactNode;
-    title2: string
-}
 
-export default function ButtonBase(props: Props) {
-    const {title,} = props;
+export default function ButtonBase() {
     const {login} = useAuth();
-    const {account} = useWeb3React();
 
     return (
         <div
@@ -23,7 +17,7 @@ export default function ButtonBase(props: Props) {
                 </div>
                 <div>
                     <button className=" pl-2 font-bold" onClick={login}>
-                        {account ? <span>{title}</span> : <span>title2</span>}
+                        Connect Wallet
                     </button>
                 </div>
 

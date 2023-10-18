@@ -1,69 +1,105 @@
-import {useTokenAContract, useTokenXContract} from "./useContract";
+import {useTokenAContract, useTokenSwapContract, useTokenXContract} from "./useContract";
 import {useCallback, useEffect, useMemo, useState} from "react";
 import web3 from "web3";
+import {useWeb3React} from "@web3-react/core";
+import {BigNumber} from "ethers";
 
 export const useTokenAX = () => {
+    const {account} = useWeb3React();
     const tokenAContract = useTokenAContract();
-    const [rawTokenSoldA, setRawTokenSoldA] = useState("");
-    const [tokenPriceA, setTokenPriceA] = useState("");
+    const [balanceTokenA, setBalanceTokenA] = useState("");
+    const [tokenPriceA, setTokenPriceA] = useState(0);
     const tokenXContract = useTokenXContract();
-    const [rawTokenSoldX, setRawTokenSoldX] = useState("");
-    const [tokenPriceX, setTokenPriceX] = useState("");
+    const tokenSwapContract = useTokenSwapContract();
+    const [balanceTokenX, setBalanceTokenX] = useState("");
+    const [tokenPriceX, setTokenPriceX] = useState(0);
+    const [allowanceA, setAllowanceA] = useState(0);
+    const [allowanceX, setAllowanceX] = useState(0);
 
 
-    const tokenSoldA = useMemo(() => {
-        return web3.utils.fromWei(rawTokenSoldA, "ether");
-    }, [rawTokenSoldA]);
+    const balanceA = useMemo(() => {
+        return web3.utils.toBN(balanceTokenA).toString();
+    }, [balanceTokenA]);
 
-    const tokenSoldX = useMemo(() => {
-        return web3.utils.fromWei(rawTokenSoldX, "ether");
-    }, [rawTokenSoldX]);
+    const balanceX = useMemo(() => {
+        return web3.utils.toBN(balanceTokenX).toString();
+    }, [balanceTokenX]);
 
+    const allowanceTokenA = useMemo(() => {
+        return web3.utils.toBN(allowanceA).toString();
+    }, [allowanceA]);
 
-    const onByTokenA = useCallback(
-        async (address: string, amount: string | number) => {
-            if (!tokenAContract) return;
-            const tx = await tokenAContract.buyTokens(amount, {
-                from: address,
-                value: amount,
-            });
-
-            const tokenPrice = await tokenAContract.tokenPrice({from: address});
-            setTokenPriceA(tokenPrice)
-            return tx.wait();
-        },
-        [tokenAContract]
-    );
+    const allowanceTokenX = useMemo(() => {
+        return web3.utils.toBN(allowanceX).toString();
+    }, [allowanceX]);
 
 
     useEffect(() => {
-        if (!tokenAContract?.address) return;
-        tokenAContract.tokensSold({from: tokenAContract?.address})
-            .then((_rawBalance: any) => {
-                setRawTokenSoldA(_rawBalance);
-            });
+        (async () => {
+            if (!tokenAContract?.address) return;
+            const tokenBalanceA = await tokenAContract.balanceOf(tokenSwapContract?.address);
+            setBalanceTokenA(tokenBalanceA);
+            const abcPrice = await tokenAContract.tokenPrice();
+            setTokenPriceA(abcPrice)
+            const allowanceTokenA = await tokenAContract.allowance(account, tokenSwapContract?.address);
+            setAllowanceA(allowanceTokenA)
 
-        tokenAContract.tokenPrice({from: tokenAContract?.address})
-            .then((_rawPrice: any) => {
-                setTokenPriceA(_rawPrice);
-            });
-
-
-        if (!tokenXContract?.address) return;
-        tokenXContract.tokensSold({from: tokenXContract?.address})
-            .then((_rawBalance: any) => {
-                setRawTokenSoldX(_rawBalance);
-            });
-
-        tokenXContract.tokenPrice({from: tokenXContract?.address})
-            .then((_rawPrice: any) => {
-                setTokenPriceX(_rawPrice);
-            });
-
-    }, [tokenAContract, tokenAContract?.address, tokenXContract, tokenXContract?.address]);
+            if (!tokenXContract?.address) return;
+            const tokenBalanceX = await tokenXContract.balanceOf(tokenSwapContract?.address);
+            setBalanceTokenX(tokenBalanceX);
+            const xyzPrice = await tokenXContract.tokenPrice();
+            setTokenPriceX(xyzPrice);
+            const allowanceTokenX = await tokenXContract.allowance(account, tokenSwapContract?.address);
+            setAllowanceX(allowanceTokenX)
 
 
-    return {onByTokenA, tokenSoldA, tokenPriceA, tokenSoldX, tokenPriceX};
+        })()
+    }, [account, tokenAContract, tokenAContract?.address, tokenXContract, tokenXContract?.address]);
+
+
+    const onApprove = useCallback(
+        async (tokenAddress : any) => {
+            try {
+                if (!tokenAContract) return;
+                await tokenAContract.approve(tokenAddress,BigNumber.from(50).div(100).mul(944));
+                console.log(BigNumber.from(50).div(100).mul(944) + " ---------")
+            } catch (err) {
+                alert("Cant approve Tokens " + err);
+            }
+            try {
+                if (!tokenXContract) return;
+                await tokenXContract.approve(tokenAddress,BigNumber.from(50).div(100).mul(944));
+
+            } catch (err) {
+                alert("Cant approve Tokens " + err);
+            }
+        },
+        [tokenAContract, tokenXContract]
+    );
+
+    // const onApproveTokenX = useCallback(
+    //     async (address: string, amount: number) => {
+    //
+    //         if (amount > 0) {
+    //             if (!tokenXContract) return;
+    //             await tokenXContract.approve(tokenSwapContract?.address, 3).send({from: address});
+    //         } else {
+    //             alert("Cant approve Tokens with Expected return less then zero")
+    //         }
+    //     },
+    //     [tokenAContract, tokenXContract]
+    // );
+
+
+    return {
+        balanceA,
+        tokenPriceA,
+        balanceX,
+        tokenPriceX,
+        allowanceTokenA,
+        allowanceTokenX,
+        onApprove,
+    };
 
 
 };

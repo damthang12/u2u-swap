@@ -6,6 +6,6 @@ type Props = {
 };
 
 const MainLayout = ({children, token}: Props) => <div
-    className={`w-full ${token ? 'mt-20' : ''}`}>{children}</div>;
+    className={`w-full ${token ? 'mt-[6rem]' : ''}`}>{children}</div>;
 
 export default MainLayout;

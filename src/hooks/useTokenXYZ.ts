@@ -26,7 +26,6 @@ export const useTokenXYZ = () => {
         [tokenXContract]
     );
 
-
     useEffect(() => {
         if (!tokenXContract?.address) return;
         tokenXContract.tokensSold({from: tokenXContract?.address})
