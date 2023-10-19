@@ -10,10 +10,22 @@ import web3 from "web3";
 import Swap from "../../components/swap/Swap";
 import AutoApprove from "../../components/autoApprove/AutoApprove";
 import ButtonBase from "../../components/buttonBase/buttonBase";
+import {useTokenSwapContract} from "../../hooks/useContract";
 
 
 const TokenSwap = () => {
-    const {balanceA, tokenPriceA, balanceX, tokenPriceX, onApprove, allowanceTokenA, allowanceTokenX} = useTokenAX();
+
+    const tokenSwapContract = useTokenSwapContract();
+    const {
+        balanceA,
+        tokenPriceA,
+        balanceX,
+        tokenPriceX,
+        onApproveTokenX,
+        onApproveTokenA,
+        allowanceTokenA,
+        allowanceTokenX
+    } = useTokenAX();
     const {onByTokenA, onByTokenX, convertFees, onSwapTokenABC, onSwapTokenXYZ, convertRatio} = useTokenSwap();
     const [tokenNumberA, setTokenNumberA] = useState("");
     const [tokenNumberX, setTokenNumberX] = useState("");
@@ -46,9 +58,9 @@ const TokenSwap = () => {
         onByTokenX(account, tokenNumberX, tokenPriceX).then(r => console.log(r));
     };
     const handleOnSwapABC = () => {
-        if (!account || !swapAmountA || !finalAmount) return;
+        if (!account || !swapAmountA) return;
         const convertSwapAmount = web3.utils.toBN(swapAmountA).toString()
-        onSwapTokenABC(account, convertSwapAmount, finalAmount).then(r => console.log(r));
+        onSwapTokenABC(account, convertSwapAmount).then(r => console.log(r));
     };
 
     const handleOnSwapXYZ = () => {
@@ -66,8 +78,8 @@ const TokenSwap = () => {
         } else {
             setIsDisable(false)
         }
-        // if (!account) return;
-        // onApprove(tokenAContract?.address).then(r => console.log(r));
+        if (!account) return;
+        onApproveTokenA(tokenSwapContract?.address).then(r => console.log(r));
     };
     console.log(isDisable)
 
@@ -114,6 +126,7 @@ const TokenSwap = () => {
             setFinalAmount(Math.ceil(Final));
         }
     }
+    console.log(isDisable)
 
     return (
         <div className="flex justify-around bg-[#eeeaf4] pt-[100px] pb-[200px]">

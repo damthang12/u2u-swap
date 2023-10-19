@@ -67,17 +67,14 @@ export const useTokenSwap = () => {
     );
 
     const onSwapTokenABC = useCallback(
-        async (address: string, switchAmount: any, finalAmount: number) => {
+        async (address: string, switchAmount: any) => {
 
-            if (finalAmount > 0) {
+
                 if (!tokenSwapContract) return;
                 await tokenSwapContract.swapTKA(switchAmount, {
                     from: address,
                     gasLimit: 3000000
                 })
-            } else {
-                alert("Cant switch Tokens with Expected return less then zero")
-            }
         },
         [tokenSwapContract, tokenAContract, tokenXContract]
     );

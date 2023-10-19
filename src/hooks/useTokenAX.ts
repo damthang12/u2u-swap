@@ -52,24 +52,16 @@ export const useTokenAX = () => {
             const allowanceTokenX = await tokenXContract.allowance(account, tokenSwapContract?.address);
             setAllowanceX(allowanceTokenX)
 
-
         })()
-    }, [account, tokenAContract, tokenAContract?.address, tokenXContract, tokenXContract?.address]);
+    }, [account, tokenAContract, tokenAContract?.address, tokenXContract, tokenXContract?.addres,allowanceTokenA,allowanceTokenX]);
 
 
-    const onApprove = useCallback(
+
+    const onApproveTokenA = useCallback(
         async (tokenAddress : any) => {
             try {
                 if (!tokenAContract) return;
-                await tokenAContract.approve(tokenAddress,BigNumber.from(50).div(100).mul(944));
-                console.log(BigNumber.from(50).div(100).mul(944) + " ---------")
-            } catch (err) {
-                alert("Cant approve Tokens " + err);
-            }
-            try {
-                if (!tokenXContract) return;
-                await tokenXContract.approve(tokenAddress,BigNumber.from(50).div(100).mul(944));
-
+                await tokenAContract.approve(tokenAddress,"1000000000000000000000");
             } catch (err) {
                 alert("Cant approve Tokens " + err);
             }
@@ -77,18 +69,19 @@ export const useTokenAX = () => {
         [tokenAContract, tokenXContract]
     );
 
-    // const onApproveTokenX = useCallback(
-    //     async (address: string, amount: number) => {
-    //
-    //         if (amount > 0) {
-    //             if (!tokenXContract) return;
-    //             await tokenXContract.approve(tokenSwapContract?.address, 3).send({from: address});
-    //         } else {
-    //             alert("Cant approve Tokens with Expected return less then zero")
-    //         }
-    //     },
-    //     [tokenAContract, tokenXContract]
-    // );
+    const onApproveTokenX = useCallback(
+        async (tokenAddress: string) => {
+
+            try {
+                if (!tokenXContract) return;
+                await tokenXContract.approve(tokenAddress,"1000000000000000000000");
+
+            } catch (err) {
+                alert("Cant approve Tokens " + err);
+            }
+        },
+        [tokenAContract, tokenXContract]
+    );
 
 
     return {
@@ -98,7 +91,8 @@ export const useTokenAX = () => {
         tokenPriceX,
         allowanceTokenA,
         allowanceTokenX,
-        onApprove,
+        onApproveTokenA,
+        onApproveTokenX
     };
 
 
