@@ -34,6 +34,7 @@ export const useTokenSwap = () => {
 
 
     const onByTokenA = useCallback(
+        // Viết try catch ở hàm ngoài cùng. Trong trường hợp này là ở component, chứ ko phải ở đây. Tương tự vs các hàm dưới
         async (address: string, amount: any, tokenPrice : any) => {
             try {
                 if (!tokenSwapContract) return;

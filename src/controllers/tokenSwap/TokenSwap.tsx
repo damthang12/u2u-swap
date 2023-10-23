@@ -27,35 +27,46 @@ const TokenSwap = () => {
         allowanceTokenX
     } = useTokenAX();
     const {onByTokenA, onByTokenX, convertFees, onSwapTokenABC, onSwapTokenXYZ, convertRatio} = useTokenSwap();
-    const [tokenNumberA, setTokenNumberA] = useState("");
-    const [tokenNumberX, setTokenNumberX] = useState("");
+    // const [tokenNumberA, setTokenNumberA] = useState("");
+    // const [tokenNumberX, setTokenNumberX] = useState("");
     const {account} = useWeb3React();
     const [tokenSelected, setTokenSelected] = useState("ABC");
     const [swapAmountA, setSwapAmountA] = useState<number>(0);
     const [swapAmountX, setSwapAmountX] = useState<number>(0);
     const [finalAmount, setFinalAmount] = useState(0);
-    const [tokenNumberXError, setNumberXError] = useState(false);
-    const [tokenNumberAError, setNumberAError] = useState(false);
+    // const [tokenNumberXError, setNumberXError] = useState(false);
+    // const [tokenNumberAError, setNumberAError] = useState(false);
     const [isDisable, setIsDisable] = useState(false);
     const [allowanceA, setAllowanceA] = useState<any>();
     const [allowanceX, setAllowanceX] = useState<any>();
 
+    // Ở đây mình ko cần quan tâm đến click event param truyền lên từ hàm click, tương tự đối vs các hàm ở dưới
+    // Các hàm ở trong hook sẽ chỉ liên quan đến các tính năng của nó. Còn tất cả những params nào liên quan đến UI/UX (nếu cần
+    // phải xử lý), VD như cái event click em viết ở dưới thì mình nên xử lý nó ở trong component
 
-    const handleBuyTokenA = (evt: React.FormEvent) => {
-        evt.preventDefault();
-        if (tokenNumberA.trim() === '') {
-            setNumberAError(true);
-        }
-        if (!account || !tokenNumberA) return;
-        onByTokenA(account, tokenNumberA, tokenPriceA).then(r => console.log(r));
+    // const handleBuyTokenA = (evt: React.FormEvent) => {
+    const handleBuyTokenA = (value: string) => {
+        // evt.preventDefault();
+        // if (tokenNumberA.trim() === '') {
+        //     setNumberAError(true);
+        // }
+        // if (!account || !tokenNumberA) return;
+        // onByTokenA(account, tokenNumberA, tokenPriceA).then(r => console.log(r));
+
+        if (!account) return; // Chuyển cái check account này vào trong hook
+        onByTokenA(account, value, tokenPriceA).then(r => console.log(r));
     };
-    const handleBuyTokenX = (evt: React.FormEvent) => {
-        evt.preventDefault();
-        if (tokenNumberX.trim() === '') {
-            setNumberXError(true);
-        }
-        if (!account || !tokenNumberX) return;
-        onByTokenX(account, tokenNumberX, tokenPriceX).then(r => console.log(r));
+
+    // const handleBuyTokenX = (evt: React.FormEvent) => {
+    const handleBuyTokenX = (value: string) => {
+        // evt.preventDefault();
+        // if (tokenNumberX.trim() === '') {
+        //     setNumberXError(true);
+        // }
+        // if (!account || !tokenNumberX) return;
+        // onByTokenX(account, tokenNumberX, tokenPriceX).then(r => console.log(r));
+        if (!account) return;
+        onByTokenX(account, value, tokenPriceX).then(r => console.log(r));
     };
     const handleOnSwapABC = () => {
         if (!account || !swapAmountA) return;
@@ -69,8 +80,19 @@ const TokenSwap = () => {
         onSwapTokenXYZ(account, convertSwapAmount, finalAmount).then(r => console.log(r));
     };
 
-    const handleAutoApprove = (evt: React.FormEvent) => {
-        evt.preventDefault();
+
+
+    // Ở đây mình ko làm auto approve. Vì như vậy vừa connect ví xong nó sẽ gửi 1 cái request lên metamask để bắt user
+    // approve. Như thế user sẽ ko biết nó là cái gì. Em cứ để nút approve để user tự click approve. Như vậy user sẽ hiểu
+    // là mình cần phải approve trước
+    //
+    // error state tương tự như các chỗ khác, dùng useMemo để check. Ví dụ Swap A => X thì cần check allowance của A > 0, và ngược lại
+    //   => cần tạo 2 biến isApproved cho 2 chiều swap. Khi swap chiều nào thì mình chỉ cần check approved chiều đó thôi
+    // VD: const isTokenAApproved = useMemo(() => allowanceA > 0, [allowanceA])
+
+      // const handleAutoApprove = (evt: React.FormEvent) => {
+    const handleAutoApprove = () => {
+        // evt.preventDefault();
         setAllowanceA(allowanceTokenA)
         setAllowanceX(allowanceTokenX)
         if (allowanceA > 0 && allowanceX > 0) {
@@ -88,29 +110,31 @@ const TokenSwap = () => {
     }, [swapAmountX, swapAmountA])
 
 
-    const validateInputTokenA = (evt: React.ChangeEvent<HTMLInputElement>) => {
-        const {value}: any = evt.target;
-        if (value >= 1 || value.trim() === '') {
-            setTokenNumberA(value);
-            setNumberAError(false);
+    // 2 Hàm này chỉ validate value từ cái input, ko liên quan đến token A hay X, nên xử lý nó ở trong component BuyToken
+    // const validateInputTokenA = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    //     const {value}: any = evt.target;
+    //     if (value >= 1 || value.trim() === '') {
+    //         setTokenNumberA(value);
+    //         setNumberAError(false);
+    //
+    //     } else {
+    //         setNumberAError(true);
+    //     }
+    // };
+    //
+    // const validateInputTokenX = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    //     const {value}: any = evt.target;
+    //     if (value >= 1 || value.trim() === '') {
+    //         setTokenNumberX(value);
+    //         setNumberXError(false);
+    //
+    //     } else {
+    //         setNumberXError(true);
+    //     }
+    // };
 
-        } else {
-            setNumberAError(true);
-        }
-    };
 
-    const validateInputTokenX = (evt: React.ChangeEvent<HTMLInputElement>) => {
-        const {value}: any = evt.target;
-        if (value >= 1 || value.trim() === '') {
-            setTokenNumberX(value);
-            setNumberXError(false);
-
-        } else {
-            setNumberXError(true);
-        }
-    };
-
-
+    // Sửa lại dùng hàm useMemo để calculate Swap amount
     const calculateSwap = () => {
         let Final;
         if (tokenSelected === "ABC") {
@@ -126,28 +150,30 @@ const TokenSwap = () => {
             setFinalAmount(Math.ceil(Final));
         }
     }
-    console.log(isDisable)
+    // Ko console log ở đây. Muốn console log để check value thì cho vào trong useEffect
+    // console.log(isDisable)
 
     return (
         <div className="flex justify-around bg-[#eeeaf4] pt-[100px] pb-[200px]">
             <div>
                 <div className="">
                     <BuyTokens
-                        onClick={handleBuyTokenA}
+                        onBuyToken={handleBuyTokenA}
                         tokenPrice={tokenPriceA.toString()}
-                        onChange={validateInputTokenA}
-                        value={tokenNumberA}
+                        // onChange={validateInputTokenA}
+                        // value={tokenNumberA}
                         tokenName="TokenABC"
-                        error={tokenNumberAError}/>
+                        // error={tokenNumberAError}
+                    />
                 </div>
                 <div className="pt-5">
                     <BuyTokens
-                        onClick={handleBuyTokenX}
+                        onBuyToken={handleBuyTokenX}
                         tokenPrice={tokenPriceX.toString()}
-                        onChange={validateInputTokenX}
-                        value={tokenNumberX}
+                        // onChange={validateInputTokenX}
+                        // value={tokenNumberX}
                         tokenName="TokenXYZ"
-                        error={tokenNumberXError}
+                        // error={tokenNumberXError}
                     />
                 </div>
             </div>
@@ -198,6 +224,13 @@ const TokenSwap = () => {
                                 balance={balanceX}/>
 
                         </div>
+
+                         {/*Ở đây mình ko làm auto approve. Vì như vậy vừa connect ví xong nó sẽ gửi 1 cái request lên metamask để bắt user*/}
+                         {/*approve. Như thế user sẽ ko biết nó là cái gì. Em cứ để nút approve để user tự click approve. Như vậy user sẽ hiểu*/}
+                         {/*là mình cần phải approve trước*/}
+
+                         {/*error state tương tự như các chỗ khác, dùng useMemo để check. Ví dụ Swap A => X thì cần check allowance của A > 0, và ngược lại */}
+                         {/*=> cần tạo 2 biến isApproved cho 2 chiều swap. */}
                         <div
                             className="mt-4 ">
                             {account ? (
